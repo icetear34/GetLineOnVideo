@@ -1,15 +1,15 @@
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include <iostream>
-#define PI 3.1416 
+#define PI 3.1416
 
 using namespace cv;
 using namespace std;
 
 void calcLinesP(const Mat &input, std::vector<Vec4i> &lines);//圖片, int[4]
 void drawLinesP(Mat &input, const std::vector<Vec4i> &lines);
-void drawRectangleP(Mat &input, const std::vector<Vec4i> &lines);
+//void drawRectangleP(Mat &input, const std::vector<Vec4i> &lines);9/29註解掉
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int main(int argc, char* argv[])
@@ -22,25 +22,25 @@ int main(int argc, char* argv[])
 		cout << "Cannot open the video cam" << endl;
 		return -1;
 	}
-
-	double dWidth = cap.get(CV_CAP_PROP_FRAME_WIDTH); //get the width of frames of the video
-	double dHeight = cap.get(CV_CAP_PROP_FRAME_HEIGHT); //get the height of frames of the video
+	//抓取影像寬高
+	double dWidth = cap.get(CV_CAP_PROP_FRAME_WIDTH); 
+	double dHeight = cap.get(CV_CAP_PROP_FRAME_HEIGHT);
 
 	cout << "Frame size : " << dWidth << " x " << dHeight << endl;
 
 	namedWindow("RealVideo", CV_WINDOW_AUTOSIZE); //create a window 
 	namedWindow("CannyVideo", CV_WINDOW_AUTOSIZE);
-	Mat zone(dHeight, dWidth, 0);
+	//Mat zone(dHeight, dWidth, 0);
 
 	vector<Vec4i> linesP;//線段座標
 	int counTs = 0;//延遲計數
 
 	while (1)
 	{
-		Mat frame;
+		Mat frame;  //儲存讀取到的影格
 
 		bool bSuccess = cap.read(frame); //讀取影格
-		waitKey(300);
+		waitKey(300); //延遲
 		if (counTs<10)
 		{
 			Mat RealFram;
@@ -98,13 +98,15 @@ int main(int argc, char* argv[])
 	return 0;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//抓線
 void calcLinesP(const Mat &input, std::vector<Vec4i> &lines) {
 	Mat contours;
 	Canny(input, contours, 60, 175); //取 input 邊緣 至 contours
 	lines.clear();
 	HoughLinesP(contours, lines, 1, CV_PI / 360, 170, 30, 15);
+	//lines是一個向量，將存儲（x，y，x，y）總之是測量直線
 }
-
+//畫線
 void drawLinesP(Mat &input, const std::vector<Vec4i> &lines) {
 	for (int i = 0; i<lines.size(); i++) {
 		int rng = 10;
@@ -121,4 +123,4 @@ void drawRectangleP(Mat &input, const std::vector<Vec4i> &lines) {
 		rectangle(input, Point(lines[i][0], lines[i][1]), Point(lines[i][2], lines[i][3]), Scalar(0, 255, 0), 2);
 	}
 }
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////
